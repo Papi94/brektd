@@ -1,0 +1,17 @@
+{
+  "name": "brektd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "brektd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^14.2.0",
+    "@terra-money/terra.js": "^3.0.4",
+    "minimist": "^1.2.5",
+    "request": "^2.88.2"
+  }
+}
