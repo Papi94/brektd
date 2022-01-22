@@ -1,4 +1,4 @@
-﻿**bRektd - A CLI interface for Anchor Protocol liquidations**
+**bRektd - A CLI interface for Anchor Protocol liquidations**
 
 Summary: bRektd aims to provide users with a simple CLI interface for performing all necessary actions involved in participating in Anchor Protocol liquidations. 
 
@@ -28,11 +28,13 @@ Mac/Linux: `export MNEMONIC_KEY="your key here"`
 Once that is done you are ready to start using the CLI interface.
 
 Current supported assets: bluna, beth
+
 --premium is used to define the premium slot in which the bid is placed, 1 =1%, 2=2% etc
 
 Run `node brektd.js` to display the cli documentation
 
 Place a bid:
+
 --place-bid --asset bluna|beth --amount amount_to_bid --premium liquidation_premium
 
 Example: 
