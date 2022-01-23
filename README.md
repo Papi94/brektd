@@ -18,7 +18,7 @@ Once dependancies are installed you will need to setup a wallet to be used by th
 
 Run the following command to encrypt your private key and store it to a file:
 
-node `brektd.js --setup-keys --private-key "your private key" --password "your password" `
+`node brektd.js --setup-keys --private-key "your private key" --password "your password" `
 
 The password is read at run time from the PASSWORD environment variable. You will need to set this in your current terminal session every time. To do this enter:
 
