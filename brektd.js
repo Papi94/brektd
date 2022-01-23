@@ -6,7 +6,6 @@ async function anchorCli(){
     var mkstr = process.env.MNEMONIC_KEY
     var anchorLiquidationWrapper = new anchorLiquidationApi(mkstr)
     var argv = require('minimist')(process.argv.slice(2));
-    console.log(argv);
 
 
 //places bid order 

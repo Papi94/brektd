@@ -24,6 +24,7 @@ Mac/Linux: `export MNEMONIC_KEY="your key here"`
 2. Or you can create a file named .env in the project directory , within the .env file you will define your key as such
 `MNEMONIC_KEY="your key here"`
 
+Warning: Storing your private keys in plain text is generally not advisable. Please take care to manage your keys safely. 
 
 Once that is done you are ready to start using the CLI interface.
 
