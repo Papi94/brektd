@@ -1,13 +1,64 @@
 const {anchorLiquidationApi} = require ('./lib/anchorliquidations.js') 
 require('dotenv').config()
+const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
+const fs = require('fs');
 
+function decrypt(pk,encryption_key) {
+    var hash = crypto.createHash('sha256');
+    data = hash.update(encryption_key, 'utf-8');
+    gen_key_hash= data.digest('hex');
+    const IV_LENGTH = 16;
+    let textParts = pk.split(':');
+    let iv = Buffer.from(textParts.shift(), 'hex');
+    let encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    let decipher = crypto.createDecipheriv(algorithm, Buffer.from(gen_key_hash, 'hex'), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+function encrypt(pk,encryption_key) {
+    const IV_LENGTH = 16;
+    var hash = crypto.createHash('sha256');
+    data = hash.update(encryption_key, 'utf-8');
+    gen_key_hash= data.digest('hex');
+    let iv = crypto.randomBytes(IV_LENGTH);
+    let cipher = crypto.createCipheriv(algorithm, Buffer.from(gen_key_hash, 'hex'), iv);
+    let encrypted = cipher.update(pk);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
 
 async function anchorCli(){
-    var mkstr = process.env.MNEMONIC_KEY
-    var anchorLiquidationWrapper = new anchorLiquidationApi(mkstr)
     var argv = require('minimist')(process.argv.slice(2));
 
+if (argv["setup-key"] == true){
+    password = argv["password"] + "" //make sure paasword is a string
+    private_key = argv["private-key"]
+    encrypted_key = encrypt(private_key, password)
+    fs.writeFile("keystore", encrypted_key, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            console.log("The keystore was saved!");
+            return
+        }); 
+    return
+    }
 
+try{
+    var encrypted_key = fs.readFileSync('keystore', 'utf-8');
+}catch{
+    console.log("Please setup a keystore first")
+    return
+}
+
+var encryption_key = process.env.PASSWORD
+
+var mkstr = decrypt(encrypted_key, encryption_key)
+
+var anchorLiquidationWrapper = new anchorLiquidationApi(mkstr)
 //places bid order 
 //node brektd.js --bid --asset bluna --amount 10
 if (argv["place-bid"] == true){
@@ -163,6 +214,9 @@ if (argv["claim-proceeds"] == "help"){
     console.log("brektd.js --claim-proceeds --asset bluna")
     return
 }
+
+
+
 
 displayHelp()
 return

@@ -14,18 +14,22 @@ Once downloaded open a command prompt window and move the directory to the proje
 
 Run: `npm install`
 
-Once dependancies are installed you will need to setup a wallet to be used by the app. There are two ways to do this.
+Once dependancies are installed you will need to setup a wallet to be used by the app. 
 
-1. You can set an environment variable in the context of your current terminal session using the below commands
-Windows:`set MNEMONIC_KEY="your key here"`
-Mac/Linux: `export MNEMONIC_KEY="your key here"`
+Run the following command to encrypt your private key and store it to a file:
 
+node `brektd.js --setup-keys --private-key "your private key" --password "your password" `
 
-2. Or you can create a file named .env in the project directory , within the .env file you will define your key as such
-`MNEMONIC_KEY="your key here"`
+The password is read at run time from the PASSWORD environment variable. You will need to set this in your current terminal session every time. To do this enter:
 
-Warning: Storing your private keys in plain text is generally not advisable. Please take care to manage your keys safely. 
+`set PASSWORD="yourpassword"` on windows
 
+OR 
+
+`export PASSWORD="yourpassword"` on mac or linux
+
+You will need to define PASSWORD each time you open a new terminal
+ 
 Once that is done you are ready to start using the CLI interface.
 
 Current supported assets: bluna, beth
