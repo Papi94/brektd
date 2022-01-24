@@ -38,11 +38,10 @@ if (argv["setup-key"] == true){
     private_key = argv["private-key"]
     encrypted_key = encrypt(private_key, password)
     fs.writeFile("keystore", encrypted_key, function(err) {
-            if(err) {
-                return console.log(err);
-            }
-            console.log("The keystore was saved!");
-            return
+        if(err) {
+            console.log(err);
+        }
+        console.log("The keystore was saved!");
         }); 
     return
     }
