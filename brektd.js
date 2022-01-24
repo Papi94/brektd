@@ -1,33 +1,37 @@
 const {anchorLiquidationApi} = require ('./lib/anchorliquidations.js') 
 require('dotenv').config()
 const crypto = require('crypto');
-const algorithm = 'aes-256-ctr';
+const KEY_SIZE = 256
+const ITERATIONS = 100
 const fs = require('fs');
 
-function decrypt(pk,encryption_key) {
-    var hash = crypto.createHash('sha256');
-    data = hash.update(encryption_key, 'utf-8');
-    gen_key_hash= data.digest('hex');
-    const IV_LENGTH = 16;
-    let textParts = pk.split(':');
-    let iv = Buffer.from(textParts.shift(), 'hex');
-    let encryptedText = Buffer.from(textParts.join(':'), 'hex');
-    let decipher = crypto.createDecipheriv(algorithm, Buffer.from(gen_key_hash, 'hex'), iv);
-    let decrypted = decipher.update(encryptedText);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
-}
 
-function encrypt(pk,encryption_key) {
-    const IV_LENGTH = 16;
-    var hash = crypto.createHash('sha256');
-    data = hash.update(encryption_key, 'utf-8');
-    gen_key_hash= data.digest('hex');
-    let iv = crypto.randomBytes(IV_LENGTH);
-    let cipher = crypto.createCipheriv(algorithm, Buffer.from(gen_key_hash, 'hex'), iv);
-    let encrypted = cipher.update(pk);
-    encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return iv.toString('hex') + ':' + encrypted.toString('hex');
+//https://github.com/terra-money/oracle-feeder/blob/main/feeder/src/keystore.ts
+function decrypt(transitmessage, pass) {
+    const salt = Buffer.from(transitmessage.substr(0, 32), 'hex')
+    const iv = Buffer.from(transitmessage.substr(32, 32), 'hex')
+    const key = crypto.pbkdf2Sync(pass, salt, ITERATIONS, KEY_SIZE / 8, 'sha1')
+    
+    const encryptedText = transitmessage.substring(64)
+    const cipher = crypto.createDecipheriv('AES-256-CBC', key, iv)
+    const decryptedText = Buffer.concat([
+        cipher.update(encryptedText, 'base64'),
+        cipher.final(),
+    ]).toString()
+    
+    return decryptedText
+}
+function encrypt(plainText, pass) {
+    const salt = crypto.randomBytes(16)
+    const iv = crypto.randomBytes(16)
+    const key = crypto.pbkdf2Sync(pass, salt, ITERATIONS, KEY_SIZE / 8, 'sha1')
+    
+    const cipher = crypto.createCipheriv('AES-256-CBC', key, iv)
+    const encryptedText = Buffer.concat([cipher.update(plainText), cipher.final()]).toString('base64')
+    
+    // salt, iv will be hex 32 in length
+    // append them to the ciphertext for use  in decryption
+    return salt.toString('hex') + iv.toString('hex') + encryptedText
 }
 
 async function anchorCli(){
